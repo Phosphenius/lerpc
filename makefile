@@ -5,4 +5,4 @@ clean:
 	rm lerpc
 	
 install:
-	install lerpc /usr/bin
+	install -D lerpc $(DESTDIR)usr/bin/lerpc
