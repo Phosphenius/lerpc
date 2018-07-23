@@ -3,3 +3,6 @@ lerpc: main.c
 
 clean:
 	rm lerpc
+	
+install:
+	install lerpc /usr/bin
