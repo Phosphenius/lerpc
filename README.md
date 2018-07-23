@@ -1,4 +1,4 @@
-#lerpc
+# lerpc
 
 Does linear interpolation (lerp) between HTML color codes. 
 Example:
