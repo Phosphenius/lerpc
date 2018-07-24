@@ -2,101 +2,57 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef enum { false, true } bool;
 
-struct color
-{
-    int r;
-    int g;
-    int b;
-};
-
-char *str_slice(int start, int end, char *str)
-{
-    char *result = malloc(sizeof(char) * strlen(str));
-    int counter = 0;
+int *str_to_color(const char *str) {    
+    int len = strlen(str);
+    int *color = malloc((len-1)/2); 
+    int j = 0;    
+    char *substr = malloc(3);
     
-    for(int i=start; i < end; i++)
-    {
-        result[counter] = str[i];
-        counter++;
+    for(int i=1; i < len; i=i+2) {
+        substr[0] = str[i];
+        substr[1] = str[i+1];
+        substr[2] = '\0';
+        sscanf(substr, "%x", &color[j]);
+        j++;
     }
     
-    return result;
-}
-
-void print_color(struct color col)
-{
-    printf("#%02x%02x%02x\n", col.r, col.g, col.b);
-}
-
-int lerp(int a, int b, float t)
-{
-    return (b - a) * t + a;
-}
-
-struct color lerpc(struct color a, struct color b, float t)
-{
-    a.r = lerp(a.r, b.r, t);
-    a.g = lerp(a.g, b.g, t);
-    a.b = lerp(a.b, b.b, t);
+    free(substr);
     
-    return a;
+    return color;
 }
 
-struct color str_to_color(char *str)
-{
-    int r = 0;
-    int g = 0;
-    int b = 0;
-    
-    sscanf(str_slice(1, 3, str), "%x", &r);
-    sscanf(str_slice(3, 5, str), "%x", &g);
-    sscanf(str_slice(5, 7, str), "%x", &b);
-    
-    struct color result = {r, g, b};
-    
-    return result;
-}
-
-bool validate_color_str(char *str)
-{
+int validate_color_str(const char *str) {
     int len = strlen(str);
     
-    if(len != 7 || str[0] != 35)
-    {
-        return false;
+    if(len != 7 || str[0] != 35) {
+        return 0;
     }
     
-    for(int i = 1; i < len; i++)
-    {
+    for(int i = 1; i < len; i++) {
         if(!(str[i] >= 48 && str[i] <= 57) && 
            !(str[i] >= 65 && str[i] <= 70) && 
-           !(str[i] >= 97 && str[i] <= 102))
-        {
-            return false;
+           !(str[i] >= 97 && str[i] <= 102)) {
+            return 0;
         }
     }
     
-    return true;
+    return 1;
 }
 
-int main(int argc, char **argv) 
-{
-    struct color a = {0, 0, 0};
-    struct color b = {0, 0, 0};
+int main(int argc, char **argv) {
+    int *a = NULL;
+    int *b = NULL;
     int curr = 0;
     int max = 0;
     float t = 0;
                     
-    if(argc < 5)
-    {
+    if(argc < 5) {
         fprintf(stderr, "Error: too few arguments\n");
         return -1;
     }
     
-    if(!validate_color_str(argv[1]) || !validate_color_str(argv[2]))
-    {
+    if(!validate_color_str(argv[1]) || !validate_color_str(argv[2])) {
         fprintf(stderr, "Error: invalid color string\n");
         return -1;
     }
@@ -108,16 +64,19 @@ int main(int argc, char **argv)
     
     t = (float)curr / max;
     
-    if(t > 1.0)
-    {
+    if(t > 1.0) {
         t = 1.0;
-    }
-    else if(t < .0)
-    {
+    } else if(t < .0) {
         t = .0;
     }
-    
-    print_color(lerpc(a, b, t));
+
+    for(int i=0; i < 3; i++) {
+        a[i] = (b[i] - a[i]) * t + a[i];
+    }
+
+    printf("#%02x%02x%02x\n", a[0], a[1], a[2]);
+    free(a);
+    free(b);
     
     return 0;
 }
