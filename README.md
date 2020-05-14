@@ -9,5 +9,6 @@ Output:
 ```#936b00```
 
 ## Example usage
-Battery indicator color based on charge left:
+Battery indicator colored based on charge left:
+
 ![Example](example-1.png)
